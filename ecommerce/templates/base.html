@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}UrbanKart — Simple E-commerce Store{% endblock %}</title>
+  <meta name="description" content="UrbanKart — a simple e-commerce store demo built with Django. Shop products, manage a cart and place orders.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <div class="announce">🔥 Big launch sale — flat <strong>20–30% off</strong> sitewide &nbsp;|&nbsp; Free shipping on orders over <strong>₹999</strong></div>
+
+  {% include "includes/navbar.html" %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "includes/footer.html" %}
+
+  {% if messages %}
+  <script>
+    window.__djangoMessages = [
+      {% for message in messages %}
+      { text: "{{ message|escapejs }}", type: "{{ message.tags|default:'info' }}" },
+      {% endfor %}
+    ];
+  </script>
+  {% endif %}
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

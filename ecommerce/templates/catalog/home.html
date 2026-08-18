@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static store_extras %}
+
+{% block title %}UrbanKart — Simple E-commerce Store{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div>
+      <h1>Everything you need, delivered to your doorstep.</h1>
+      <p>
+        Shop gadgets, fashion, accessories and more — with easy cart management,
+        fast checkout and order tracking. A complete e-commerce experience built
+        with Django.
+      </p>
+      <div class="hero-cta">
+        <a href="/shop/" class="btn btn-white">Shop now</a>
+        <a href="#featured" class="btn btn-ghost-light">Browse featured</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b>10+</b><span>Products</span></div>
+        <div class="stat"><b>4</b><span>Categories</span></div>
+        <div class="stat"><b>24h</b><span>Dispatch</span></div>
+      </div>
+    </div>
+    <div class="hero-art">
+      {% if featured_products %}
+      <img src="{% static featured_products.0.image %}" alt="{{ featured_products.0.name }}">
+      <span class="hero-chip top">🎧 {{ featured_products.0.discount_percent }}% OFF</span>
+      <span class="hero-chip bottom">🚚 Free shipping over ₹999</span>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Feature strip -->
+<section class="features">
+  <div class="container features-inner">
+    <div class="feature">
+      <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h-2v-11a1 1 0 0 1 1-1h12v2"/><path d="M5 7h12l3 7v3h-2"/><path d="M8 17a2 2 0 1 0 0 .01"/><path d="M18 17a2 2 0 1 0 0 .01"/></svg></span>
+      <div><b>Free shipping</b><span>On all orders over ₹999</span></div>
+    </div>
+    <div class="feature">
+      <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+      <div><b>Secure checkout</b><span>Encrypted &amp; safe ordering</span></div>
+    </div>
+    <div class="feature">
+      <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span>
+      <div><b>Easy returns</b><span>7-day no-questions returns</span></div>
+    </div>
+    <div class="feature">
+      <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+      <div><b>24×7 support</b><span>We're here to help</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured products -->
+<section class="section" id="featured">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Featured products</h2>
+        <p>Hand-picked favourites our customers love</p>
+      </div>
+      <a class="btn btn-outline btn-sm" href="/shop/">View all →</a>
+    </div>
+    <div class="product-grid">
+      {% for product in featured_products %}
+        {% include "includes/product_card.html" %}
+      {% empty %}
+        <p class="muted">Products coming soon!</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Category tiles -->
+<section class="section" style="padding-top: 0;">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Shop by category</h2>
+        <p>Find exactly what you're looking for</p>
+      </div>
+    </div>
+    <div class="chip-row">
+      {% for category in nav_categories %}
+      <a class="chip" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA banner -->
+<section class="section" style="padding-top: 0;">
+  <div class="container">
+    <div class="cta-banner">
+      <div>
+        <h2>Ready to upgrade your everyday?</h2>
+        <p>Create an account to track orders, or check out as a guest — your choice.</p>
+      </div>
+      {% if user.is_authenticated %}
+      <a class="btn btn-accent" href="/shop/">Continue shopping</a>
+      {% else %}
+      <div style="display:flex; gap: 12px; flex-wrap: wrap;">
+        <a class="btn btn-accent" href="{% url 'accounts:register' %}">Create account</a>
+        <a class="btn btn-ghost-light" style="border:1px solid rgba(255,255,255,.4); color:#fff;" href="/shop/">Browse store</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load store_extras %}
+
+{% block title %}Order Confirmed — UrbanKart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="success-wrap">
+    <div class="success-icon">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <h1>Order confirmed! 🎉</h1>
+    <p class="sub">Thank you{% if order.user %}, {{ order.user.username }}{% else %} {{ order.full_name|first }}{% endif %}! Your order has been placed successfully.</p>
+
+    <div class="success-card">
+      <div class="order-no">
+        <small>Order number</small>
+        <b>{{ order.order_number }}</b>
+      </div>
+
+      <ul class="checkout-items" style="list-style:none; margin:0; padding:0;">
+        {% for item in order.items.all %}
+        <li>
+          <span>{{ item.product_name }} <span class="q">× {{ item.quantity }}</span></span>
+          <b>{{ item.line_total|inr }}</b>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="summary-row" style="margin-top:8px;"><span>Subtotal</span><span>{{ order.subtotal|inr }}</span></div>
+      <div class="summary-row"><span>Shipping</span><span class="{% if order.shipping == 0 %}free{% endif %}">{% if order.shipping == 0 %}FREE{% else %}{{ order.shipping|inr }}{% endif %}</span></div>
+      <div class="summary-row total"><span>Total</span><span>{{ order.total|inr }}</span></div>
+
+      <div class="ship-to">
+        <b>Shipping to:</b><br>
+        {{ order.full_name }}, {{ order.address }}, {{ order.city }}, {{ order.state }} — {{ order.postal_code }}
+      </div>
+    </div>
+
+    <div class="mt-3" style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      {% if user.is_authenticated %}
+      <a class="btn btn-primary" href="{% url 'orders:my_orders' %}">View my orders</a>
+      {% endif %}
+      <a class="btn btn-outline" href="/shop/">Continue shopping</a>
+    </div>
+    <p class="muted mt-2" style="font-size: .88rem;">
+      A confirmation email has been sent to {{ order.email }} (simulated).
+    </p>
+  </div>
+</div>
+{% endblock %}

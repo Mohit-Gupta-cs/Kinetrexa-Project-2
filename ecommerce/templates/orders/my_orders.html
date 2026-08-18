@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static store_extras %}
+
+{% block title %}My Orders — UrbanKart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="page-title">My orders</h1>
+  <p class="page-sub">Track everything you've ordered with UrbanKart.</p>
+
+  {% if orders %}
+  <div class="orders-list">
+    {% for order in orders %}
+    <article class="order-card">
+      <div class="order-head">
+        <div>
+          <div class="num">{{ order.order_number }}</div>
+          <div class="meta">Placed on {{ order.created_at|date:"d M Y, g:i A" }}</div>
+        </div>
+        <span class="status-badge {{ order.status }}">{{ order.get_status_display }}</span>
+      </div>
+      <div class="order-body">
+        {% for item in order.items.all %}
+        <div class="order-item-row">
+          {% if item.product and item.product.image %}
+          <img src="{% static item.product.image %}" alt="{{ item.product_name }}">
+          {% else %}
+          <img src="" alt="" style="background:#f1f5f9;">
+          {% endif %}
+          <div style="flex:1;">
+            <div class="nm">{{ item.product_name }}</div>
+            <div class="xq">{{ item.quantity }} × {{ item.price|inr }}</div>
+          </div>
+          <b>{{ item.line_total|inr }}</b>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="order-foot">
+        <span class="muted" style="font-size:.9rem;">{{ order.items.count }} item{{ order.items.count|pluralize }} · {{ order.get_status_display }}</span>
+        <span class="order-total">Total: {{ order.total|inr }}</span>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="cart-empty" style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); margin: 40px 0 64px;">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--muted-2);"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <h2>No orders yet</h2>
+    <p>When you place an order it will show up here so you can track it.</p>
+    <a class="btn btn-primary" href="/shop/">Start shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

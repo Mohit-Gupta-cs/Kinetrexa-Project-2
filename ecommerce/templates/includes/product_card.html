@@ -1,0 +1,27 @@
+{% load static store_extras %}
+<article class="product-card">
+  <a class="product-card-media" href="{{ product.get_absolute_url }}">
+    {% if product.image %}<img src="{% static product.image %}" alt="{{ product.name }}" loading="lazy">{% endif %}
+    {% if product.discount_percent %}<span class="discount-badge">{{ product.discount_percent }}% OFF</span>{% endif %}
+    {% if not product.in_stock %}<span class="stock-badge out">Out of stock</span>
+    {% elif product.stock <= 5 %}<span class="stock-badge low">Only {{ product.stock }} left</span>{% endif %}
+  </a>
+  <div class="product-card-body">
+    <span class="product-card-cat">{{ product.category.name }}</span>
+    <a class="product-card-name" href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+    <div class="product-card-price">
+      <span class="price">{{ product.price|inr }}</span>
+      {% if product.compare_at_price %}<span class="compare-price">{{ product.compare_at_price|inr }}</span>{% endif %}
+    </div>
+    {% if product.in_stock %}
+    <form data-add-to-cart data-product-name="{{ product.name|escapejs }}" action="{% url 'cart:add' product.id %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="quantity" value="1">
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button type="submit" class="btn btn-primary btn-block btn-sm">Add to cart</button>
+    </form>
+    {% else %}
+    <button class="btn btn-ghost btn-block btn-sm" disabled>Out of stock</button>
+    {% endif %}
+  </div>
+</article>

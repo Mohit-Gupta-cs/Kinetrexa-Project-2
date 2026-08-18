@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static store_extras %}
+
+{% block title %}{{ product.name }} — UrbanKart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a><span>/</span>
+    <a href="/shop/">Shop</a><span>/</span>
+    <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a><span>/</span>
+    {{ product.name }}
+  </nav>
+
+  <div class="product-detail">
+    <div class="product-detail-media">
+      {% if product.image %}<img src="{% static product.image %}" alt="{{ product.name }}">{% endif %}
+    </div>
+
+    <div class="product-detail-info">
+      <span class="detail-cat">{{ product.category.name }}</span>
+      <h1>{{ product.name }}</h1>
+
+      <div class="detail-price">
+        <span class="price">{{ product.price|inr }}</span>
+        {% if product.compare_at_price %}
+        <span class="compare-price">{{ product.compare_at_price|inr }}</span>
+        <span class="discount-badge">{{ product.discount_percent }}% OFF</span>
+        {% endif %}
+      </div>
+      <p class="stock-line {% if not product.in_stock %}out{% elif product.stock <= 5 %}low{% else %}in{% endif %}">
+        {% if not product.in_stock %}● Out of stock
+        {% elif product.stock <= 5 %}● Only {{ product.stock }} left in stock — order soon!
+        {% else %}● In stock — ready to ship{% endif %}
+      </p>
+
+      <p class="detail-desc">{{ product.description }}</p>
+
+      {% if product.in_stock %}
+      <form data-add-to-cart data-product-name="{{ product.name|escapejs }}" action="{% url 'cart:add' product.id %}" method="post">
+        {% csrf_token %}
+        <div class="qty-row">
+          <div class="qty-stepper" data-detail-qty>
+            <button type="button" data-action="dec" aria-label="Decrease quantity">−</button>
+            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" inputmode="numeric">
+            <button type="button" data-action="inc" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="submit" class="btn btn-primary" style="flex:1;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+            Add to cart
+          </button>
+        </div>
+        <input type="hidden" name="next" value="{{ request.path }}">
+      </form>
+      {% else %}
+      <button class="btn btn-ghost btn-block" disabled>Currently out of stock</button>
+      {% endif %}
+
+      <ul class="detail-perks">
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h-2v-11a1 1 0 0 1 1-1h12v2"/><path d="M5 7h12l3 7v3h-2"/><circle cx="8" cy="17" r="2"/><circle cx="18" cy="17" r="2"/></svg>
+          Free shipping on orders over ₹999
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Secure checkout — pay on delivery or online
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          7-day easy returns &amp; 1-year warranty
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  {% if related_products %}
+  <section class="section" style="padding-top: 0;">
+    <div class="section-head">
+      <div>
+        <h2>You may also like</h2>
+        <p>More from {{ product.category.name }}</p>
+      </div>
+    </div>
+    <div class="product-grid">
+      {% for related in related_products %}
+        {% include "includes/product_card.html" with product=related %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

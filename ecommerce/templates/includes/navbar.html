@@ -1,0 +1,65 @@
+{% load static %}
+<header class="navbar">
+  <div class="container navbar-inner">
+    <a class="logo" href="/">
+      <span class="logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+          <path d="M3 6h18"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </span>
+      UrbanKart
+    </a>
+
+    <form class="nav-search" action="/shop/" method="get">
+      <div class="search-form">
+        <input class="search-input" type="text" name="q" placeholder="Search products…" value="{{ query|default:'' }}">
+        <button class="search-btn" type="submit" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+      </div>
+    </form>
+
+    <nav class="nav-links">
+      <a class="nav-link hide-sm" href="/">Home</a>
+      <a class="nav-link" href="/shop/">Shop</a>
+      <div class="dropdown">
+        <a class="nav-link" href="/shop/" style="cursor: default;">
+          Categories
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </a>
+        <div class="dropdown-menu">
+          {% for category in nav_categories %}
+          <a href="{{ category.get_absolute_url }}">{{ category.name }}<span class="count">{{ category.products.count }}</span></a>
+          {% endfor %}
+          <a href="/shop/" style="border-top: 1px solid var(--line); margin-top: 4px; padding-top: 10px; color: var(--primary); font-weight: 700;">View all products →</a>
+        </div>
+      </div>
+      {% if user.is_authenticated %}
+      <a class="nav-link hide-sm" href="{% url 'orders:my_orders' %}">My Orders</a>
+      {% endif %}
+    </nav>
+
+    <a class="cart-btn" href="{% url 'cart:detail' %}" aria-label="Cart">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+      </svg>
+      <span id="cart-badge" class="cart-badge" style="display: {{ cart_count|yesno:'grid,none' }}">{{ cart_count }}</span>
+    </a>
+
+    <div class="auth-actions">
+      {% if user.is_authenticated %}
+      <span class="user-chip hide-sm">
+        <span class="user-avatar">{{ user.username|first|upper }}</span>
+        {{ user.username }}
+      </span>
+      <a class="btn btn-outline btn-sm" href="{% url 'accounts:logout' %}">Logout</a>
+      {% else %}
+      <a class="btn btn-ghost btn-sm" href="{% url 'accounts:login' %}">Login</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'accounts:register' %}">Sign up</a>
+      {% endif %}
+    </div>
+  </div>
+</header>

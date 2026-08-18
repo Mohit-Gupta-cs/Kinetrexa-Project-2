@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Login — UrbanKart{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Welcome back 👋</h1>
+      <p class="sub">Log in to your UrbanKart account.</p>
+
+      <div class="demo-hint">
+        <strong>Demo account:</strong> username <code>demo</code> · password <code>demo12345</code>
+      </div>
+
+      {% if form.errors %}
+      <div class="field-error mb-2" style="background: var(--danger-soft); padding: 12px; border-radius: 10px;">
+        Invalid username or password. Please try again.
+      </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'accounts:login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+        <div class="field">
+          <label for="id_username">Username</label>
+          <input class="input" type="text" name="username" id="id_username" autofocus required autocomplete="username" placeholder="Your username">
+        </div>
+        <div class="field">
+          <label for="id_password">Password</label>
+          <input class="input" type="password" name="password" id="id_password" required autocomplete="current-password" placeholder="Your password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-2">Login</button>
+      </form>
+
+      <p class="auth-footer">New to UrbanKart? <a href="{% url 'accounts:register' %}?next={{ request.GET.next }}">Create an account</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

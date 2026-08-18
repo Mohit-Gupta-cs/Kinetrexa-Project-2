@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load store_extras %}
+
+{% block title %}{% if active_category %}{{ active_category.name }} — UrbanKart{% elif query %}Search: {{ query }} — UrbanKart{% else %}Shop — UrbanKart{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="page-title">
+    {% if active_category %}{{ active_category.name }}
+    {% elif query %}Results for “{{ query }}”
+    {% else %}All products{% endif %}
+  </h1>
+  <p class="page-sub">
+    {% if active_category %}{{ active_category.description }}{% else %}Browse our full catalogue — quality products at honest prices.{% endif %}
+  </p>
+
+  <div class="chip-row">
+    <a class="chip {% if not active_category and not query %}active{% endif %}" href="/shop/">All</a>
+    {% for category in categories %}
+    <a class="chip {% if active_category and active_category.slug == category.slug %}active{% endif %}"
+       href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="toolbar">
+    <span class="count">{{ page_obj.paginator.count }} product{{ page_obj.paginator.count|pluralize }}</span>
+    <select id="sort-select" class="sort-select" aria-label="Sort products">
+      <option value="">Sort by: Featured</option>
+      <option value="price_asc" {% if active_sort == "price_asc" %}selected{% endif %}>Price: Low to High</option>
+      <option value="price_desc" {% if active_sort == "price_desc" %}selected{% endif %}>Price: High to Low</option>
+      <option value="newest" {% if active_sort == "newest" %}selected{% endif %}>Newest first</option>
+      <option value="name" {% if active_sort == "name" %}selected{% endif %}>Name A–Z</option>
+    </select>
+  </div>
+
+  {% if page_obj.object_list %}
+  <div class="product-grid">
+    {% for product in page_obj %}
+      {% include "includes/product_card.html" %}
+    {% endfor %}
+  </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav class="pagination" aria-label="Pagination">
+    {% if page_obj.has_previous %}
+    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if active_sort %}&sort={{ active_sort }}{% endif %}{% if active_category %}&category={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}">‹</a>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+      <span class="page-link current">{{ num }}</span>
+      {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+      <a class="page-link" href="?page={{ num }}{% if active_sort %}&sort={{ active_sort }}{% endif %}{% if active_category %}&category={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if active_sort %}&sort={{ active_sort }}{% endif %}{% if active_category %}&category={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}">›</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="cart-empty" style="background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--muted-2);">
+      <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+    </svg>
+    <h2>No products found</h2>
+    <p>Try a different search or browse all categories.</p>
+    <a class="btn btn-primary" href="/shop/">Browse all products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
